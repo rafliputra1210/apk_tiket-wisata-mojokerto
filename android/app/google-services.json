@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "197498952881",
+    "project_id": "tiket-wisata-dlundung",
+    "storage_bucket": "tiket-wisata-dlundung.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:197498952881:android:1ab303d3c48d60bccc1690",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7Lz-DNNA7tc65vXQiHPGo_1hZKg1YQ90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

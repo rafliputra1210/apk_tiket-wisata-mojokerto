@@ -15,7 +15,7 @@ class LandingScreen extends StatelessWidget {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage(
-                  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+                  'https://images.unsplash.com/air-terjun-dlundung-trawas-5_169.jpeg',
                 ),
                 fit: BoxFit.cover,
               ),

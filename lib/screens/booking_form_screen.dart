@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/firestore_service.dart';
 import 'ticket_screen.dart';
 
 class BookingFormScreen extends StatefulWidget {
@@ -31,25 +32,53 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     super.dispose();
   }
 
-  void _submitData() {
-    // Validasi apakah semua form sudah terisi dengan benar
-    if (_formKey.currentState!.validate()) {
-      // Jika valid, lanjut ke halaman E-Tiket Sukses
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TicketScreen(
-            destinationName: "Air Terjun Dlundung",
-            ticketCount: widget.totalTickets,
-            visitorName: _nameController.text,
-            visitorNik: _nikController.text,
-            visitorAddress: _addressController.text,
+  void _submitData() async {
+  if (_formKey.currentState!.validate()) {
+    // Tampilkan loading indikator sebentar
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      // 2. Jalankan penyimpanan data manifest ke Firestore
+      await FirestoreService().submitBooking(
+        name: _nameController.text,
+        nik: _nikController.text,
+        address: _addressController.text,
+        totalTickets: widget.totalTickets,
+        totalPrice: widget.totalPrice,
+      );
+
+      // Tutup loading dialog
+      if (mounted) Navigator.pop(context);
+
+      // 3. Langsung arahkan ke halaman cetak E-Tiket (Sebab data sudah aman di cache HP)
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TicketScreen(
+              destinationName: "Air Terjun Dlundung",
+              ticketCount: widget.totalTickets,
+              visitorName: _nameController.text,
+              visitorNik: _nikController.text,
+              visitorAddress: _addressController.text,
+            ),
           ),
-        ),
-        (route) => route.isFirst, // Membersihkan tumpukan halaman pemesanan
+          (route) => route.isFirst,
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Terjadi kesalahan sistem lokal: $e')),
       );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

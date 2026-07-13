@@ -1,8 +1,26 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
-import 'screens/landing_screen.dart'; // 1. Ubah import ke landing_screen
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'screens/landing_screen.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+void main() async {
+  // 1. Wajib dipanggil sebelum inisialisasi Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // 2. Inisialisasi Firebase (Pastikan Anda sudah menghubungkan proyek ke Firebase Console)
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // 3. AKTIFKAN FITUR OFFLINE-FIRST FIRESTORE
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true, // Data otomatis disimpan di HP saat offline
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED, // Ukuran penyimpanan offline tidak terbatas
+  );
+
   runApp(const TravelApp());
 }
 
@@ -16,20 +34,9 @@ class TravelApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0F4C81), 
-          primary: const Color(0xFF0F4C81),
-          secondary: const Color(0xFF10B981), 
-          surface: const Color(0xFFF8FAFC), 
-        ),
-        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-        cardTheme: const CardThemeData(
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-          color: Colors.white,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0F4C81)),
       ),
-      home: const LandingScreen(), // 2. Ubah target awal ke LandingScreen
+      home: const LandingScreen(),
     );
   }
 }
