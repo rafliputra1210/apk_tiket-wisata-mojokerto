@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/destination.dart';
 import '../services/api_service.dart'; // 1. Import ApiService yang kita buat
 import 'detail_screen.dart';
+import '../utils/image_loader.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -81,15 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   contentPadding: const EdgeInsets.all(12),
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      wisata.imageUrl,
+                    child: SizedBox(
                       width: 70,
                       height: 70,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        width: 70, height: 70, color: Colors.grey[300],
-                        child: const Icon(Icons.broken_image, color: Colors.grey),
-                      ),
+                      child: loadWebImage(wisata.imageUrl, wisata.id),
                     ),
                   ),
                   title: Text(wisata.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),

@@ -1,7 +1,8 @@
 // lib/screens/ticket_category_screen.dart
 import 'package:flutter/material.dart';
-import '../models/ticket_category_screen.dart';
+import '../models/ticket_category.dart';
 import 'booking_form_screen.dart';
+import '../services/api_service.dart';
 
 class TicketCategoryScreen extends StatefulWidget {
   const TicketCategoryScreen({super.key});
@@ -14,20 +15,66 @@ class _TicketCategoryScreenState extends State<TicketCategoryScreen> {
   int _bottomNavIndex = 0;
 
   // Map untuk menyimpan jumlah tiket per kategori
-  final Map<String, int> _ticketQuantities = {
-    'Anak-anak (Weekday)': 0,
-    'Dewasa (Weekday)': 0,
-    'Rombongan Anak-anak >10 (Weekday)': 0,
-    'Rombongan Dewasa (Weekday)': 0,
-  };
+  final Map<String, int> _ticketQuantities = {};
+  
+  List<TicketCategory> _categories = [];
+  bool _isLoading = true;
+  String _errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories();
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      final apiService = ApiService();
+      final categories = await apiService.getTicketCategories();
+      
+      setState(() {
+        _categories = categories;
+        for (var cat in categories) {
+          _ticketQuantities[cat.name] = 0;
+        }
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
+
+  IconData _getIconForCategory(String name) {
+    String nameLower = name.toLowerCase();
+    if (nameLower.contains('anak') && !nameLower.contains('rombongan')) return Icons.child_care;
+    if (nameLower.contains('dewasa') && !nameLower.contains('rombongan')) return Icons.person;
+    if (nameLower.contains('rombongan') && nameLower.contains('anak')) return Icons.groups;
+    if (nameLower.contains('rombongan')) return Icons.group;
+    return Icons.label;
+  }
+
+  Color _getColorForCategory(String name) {
+    String nameLower = name.toLowerCase();
+    if (nameLower.contains('anak') && !nameLower.contains('rombongan')) return Colors.blueAccent;
+    if (nameLower.contains('dewasa') && !nameLower.contains('rombongan')) return Colors.green;
+    if (nameLower.contains('rombongan') && nameLower.contains('anak')) return Colors.orange;
+    if (nameLower.contains('rombongan')) return Colors.purple;
+    return Colors.blue;
+  }
 
   // Hitung total tiket terkumpul
-  int get _totalTickets => _ticketQuantities.values.reduce((a, b) => a + b);
+  int get _totalTickets {
+    if (_ticketQuantities.isEmpty) return 0;
+    return _ticketQuantities.values.reduce((a, b) => a + b);
+  }
 
   // Hitung total harga keseluruhan
   int get _totalPrice {
     int total = 0;
-    for (var category in dummyCategories) {
+    for (var category in _categories) {
       total += ((_ticketQuantities[category.name] ?? 0) * category.price).toInt();
     }
     return total;
@@ -123,13 +170,20 @@ class _TicketCategoryScreenState extends State<TicketCategoryScreen> {
                   const SizedBox(height: 16),
 
                   // Kategori Pengunjung dengan Counter
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: dummyCategories.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 16),
-                    itemBuilder: (context, index) {
-                      final category = dummyCategories[index];
+                  if (_isLoading)
+                    const Center(child: Padding(padding: EdgeInsets.all(32.0), child: CircularProgressIndicator()))
+                  else if (_errorMessage.isNotEmpty)
+                    Center(child: Padding(padding: EdgeInsets.all(16.0), child: Text(_errorMessage, style: const TextStyle(color: Colors.red))))
+                  else if (_categories.isEmpty)
+                    const Center(child: Padding(padding: EdgeInsets.all(16.0), child: Text("Tidak ada kategori tiket tersedia.")))
+                  else
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _categories.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 16),
+                      itemBuilder: (context, index) {
+                        final category = _categories[index];
                       int currentQty = _ticketQuantities[category.name] ?? 0;
 
                       return Container(
@@ -162,10 +216,10 @@ class _TicketCategoryScreenState extends State<TicketCategoryScreen> {
                                           Container(
                                             padding: const EdgeInsets.all(10),
                                             decoration: BoxDecoration(
-                                              color: category.iconBgColor, 
+                                              color: category.iconBgColor ?? _getColorForCategory(category.name), 
                                               borderRadius: BorderRadius.circular(12),
                                             ),
-                                            child: Icon(category.icon, color: Colors.white, size: 22),
+                                            child: Icon(category.icon ?? _getIconForCategory(category.name), color: Colors.white, size: 22),
                                           ),
                                           const SizedBox(width: 12),
                                           Text(

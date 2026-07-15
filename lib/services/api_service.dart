@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/destination.dart';
+import '../models/ticket_category.dart';
 
 class ApiService {
   // IP MASING-MASING EMULATOR/PERANGKAT:
@@ -21,6 +22,22 @@ class ApiService {
         return jsonResponse.map((data) => Destination.fromJson(data)).toList();
       } else {
         throw Exception('Gagal memuat data: Kode Status ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal terhubung ke server backend: $e');
+    }
+  }
+
+  // Mengambil data kategori tiket dari API Laravel
+  Future<List<TicketCategory>> getTicketCategories() async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/ticket-categories'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonResponse = json.decode(response.body);
+        return jsonResponse.map((data) => TicketCategory.fromJson(data)).toList();
+      } else {
+        throw Exception('Gagal memuat kategori tiket: Kode Status ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Gagal terhubung ke server backend: $e');
