@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   trailing: Text(
-                    'Rp ${wisata.price}',
+                    ' ${wisata.price}',
                     style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   onTap: () {

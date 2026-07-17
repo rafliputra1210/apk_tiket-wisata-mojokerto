@@ -99,7 +99,7 @@ class DetailScreen extends StatelessWidget {
                   const Text('Total Harga', style: TextStyle(color: Colors.grey, fontSize: 14)),
                   const SizedBox(height: 4),
                   Text(
-                    destination.price > 0 ? 'Rp ${destination.price}' : 'Gratis / Belum Diatur', 
+                    destination.price > 0 ? 'Rp ${destination.price}' : 'Klik tombol "Pesan Tiket" untuk melihat harga', 
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1D4ED8)),
                   ),
                 ],

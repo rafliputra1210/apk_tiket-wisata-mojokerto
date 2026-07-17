@@ -10,13 +10,11 @@ class LandingScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // 1. Gambar Latar Belakang Penuh (Full Screen Background)
+          // 1. Gambar Latar Belakang — pakai asset lokal (tidak perlu internet/CORS)
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(
-                  'https://images.unsplash.com/air-terjun-dlundung-trawas-5_169.jpeg',
-                ),
+                image: AssetImage('assets/images/hero_wisata_mojokerto.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -61,7 +59,7 @@ class LandingScreen extends StatelessWidget {
 
                   // Judul Utama
                   const Text(
-                    'Liburan Seru\nTanpa Antre',
+                    'Liburan Seru\nTanpa Antri',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 40,
