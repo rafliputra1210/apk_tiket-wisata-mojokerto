@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'screens/landing_screen.dart';
+import 'screens/login_screen.dart';
 
 import 'firebase_options.dart';
 
@@ -36,7 +36,7 @@ class TravelApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0F4C81)),
       ),
-      home: const LandingScreen(),
+      home: const LoginScreen(),
     );
   }
-}
+}

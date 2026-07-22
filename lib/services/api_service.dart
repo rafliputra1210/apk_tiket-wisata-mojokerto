@@ -1,8 +1,10 @@
 // lib/services/api_service.dart
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/destination.dart';
 import '../models/ticket_category.dart';
+
 
 class ApiService {
   // IP MASING-MASING EMULATOR/PERANGKAT:
@@ -44,7 +46,7 @@ class ApiService {
     }
   }
 
-  // 2. Mengirim data manifest/pemesanan tiket ke API Laravel
+  // 2. Mengirim data manifest/pemesanan tiket ke API Laravel (Lama)
   Future<bool> simpanBookingTiket(Map<String, dynamic> dataManifest) async {
     try {
       final response = await http.post(
@@ -58,4 +60,59 @@ class ApiService {
       return false;
     }
   }
+
+  // 3. Login pegawai ke backend Laravel melalui API
+  Future<Map<String, dynamic>?> loginPegawai(String email, String password) async {
+    try {
+      final url = Uri.parse('$baseUrl/login');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      // Cetak log ke konsol flutter run untuk mempermudah debugging
+      debugPrint('🌐 POST $url');
+      debugPrint('🌐 Status Code: ${response.statusCode}');
+      debugPrint('🌐 Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      debugPrint('❌ Exception saat login: $e');
+      return null;
+    }
+  }
+
+  // 4. Mengirim data transaksi relasional (Master & Details) ke backend Laravel
+  Future<Map<String, dynamic>?> simpanTransaksiRelasional(Map<String, dynamic> payload) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/transactions'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
 }
+
